@@ -16,8 +16,9 @@ Sistema de Gestão de Estacionamento em C
 
 **(a) Funcionalidades em que atuei:** opções 1 a 4 do menu (cadastrar, consultar, atualizar e mover veículo), com as validações de entrada e a atualização do mapa de vagas. Branch: `feature-menu-matriz`.
 
-**(b) Usei IA generativa?** não
+**(b) Usei IA generativa?** Sim
 
-**(c) Ferramenta e uso:** nenhuma
+**(c) Ferramenta e uso:** Claude (Anthropic). Usei para ajuda com a configuração do VS Code e do compilador gcc, para uma base inicial do main.c e para explicações e correção de erros de compilação.
+Li, testei e adaptei o código antes de usar.
 
 **(d) Código externo adaptado:** Não.
