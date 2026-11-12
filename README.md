@@ -18,6 +18,7 @@ Sistema de Gestão de Estacionamento em C
 
 **(b) Usei IA generativa?** Sim
 
-**(c) Ferramenta e uso:** Claude (Anthropic). Usei para ajuda com a configuração do VS Code e do compilador gcc, para uma base inicial do main.c e para explicações e correção de erros de compilação. Li, testei e adaptei o código antes de usar.
+**(c) Ferramenta e uso:** Claude (Anthropic). Usei para ajuda com a configuração do VS Code e do compilador gcc, para uma base inicial do main.c e para explicações e correção de erros de compilação.
+Li, testei e adaptei o código antes de usar.
 
 **(d) Código externo adaptado:** Não.
