@@ -103,9 +103,19 @@ int id_valido(const char *id) {
     return 1;
 }
 
+/* 1 a 60 caracteres e pelo menos um que nao seja espaco */
 int descricao_valida(const char *desc) {
     size_t len = strlen(desc);
-    return len >= 1 && len <= TAM_DESC;
+
+    if (len < 1 || len > TAM_DESC) {
+        return 0;
+    }
+    for (size_t i = 0; i < len; i++) {
+        if (desc[i] != ' ' && desc[i] != '\t') {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 int posicao_valida(int fileira, int coluna) {
@@ -120,6 +130,20 @@ void inicializar_mapa(int mapa[FILEIRAS][COLUNAS]) {
             mapa[i][j] = 0;
         }
     }
+}
+
+/* Conta quantas celulas valem 1 */
+int contar_ocupadas(int mapa[FILEIRAS][COLUNAS]) {
+    int total = 0;
+
+    for (int i = 0; i < FILEIRAS; i++) {
+        for (int j = 0; j < COLUNAS; j++) {
+            if (mapa[i][j] == 1) {
+                total++;
+            }
+        }
+    }
+    return total;
 }
 
 /* ================= COLECAO DINAMICA ================= */
@@ -163,6 +187,18 @@ int buscar_indice(const Colecao *col, const char *id) {
         }
     }
     return -1;
+}
+
+/* Conta os veiculos de uma categoria (1 = carro, 2 = moto) */
+int contar_categoria(const Colecao *col, int categoria) {
+    int total = 0;
+
+    for (int i = 0; i < col->quantidade; i++) {
+        if (col->dados[i].categoria == categoria) {
+            total++;
+        }
+    }
+    return total;
 }
 
 void liberar_colecao(Colecao *col) {
@@ -243,7 +279,7 @@ void exibir_veiculo(const Veiculo *v) {
            v->fileira, v->coluna);
 }
 
-/* ================= OPERACOES DO MENU (1 a 4) ================= */
+/* ================= OPERACOES DO MENU ================= */
 
 /* 1 - Cadastrar veiculo */
 void cadastrar_veiculo(Colecao *col, int mapa[FILEIRAS][COLUNAS]) {
@@ -375,6 +411,76 @@ void mover_veiculo(Colecao *col, int mapa[FILEIRAS][COLUNAS]) {
     printf("Veiculo %s movido para F%d/C%d.\n", v->id, f, c);
 }
 
+/* 5 - Remover veiculo */
+void remover_veiculo(Colecao *col, int mapa[FILEIRAS][COLUNAS]) {
+    char id[TAM_ID + 1];
+    int indice;
+
+    if (!pedir_id(id)) return;
+    indice = buscar_indice(col, id);
+    if (indice == -1) {
+        printf("Veiculo nao localizado.\n");
+        return;
+    }
+
+    /* 1) libera a vaga no mapa */
+    mapa[col->dados[indice].fileira - 1][col->dados[indice].coluna - 1] = 0;
+
+    for (int i = indice; i < col->quantidade - 1; i++) {
+        col->dados[i] = col->dados[i + 1];
+    }
+    col->quantidade--;
+
+    printf("Veiculo %s removido.\n", id);
+}
+
+/* 6 - Listar veiculos cadastrados */
+void listar_veiculos(const Colecao *col) {
+    if (col->quantidade == 0) {
+        printf("Nenhum veiculo cadastrado.\n");
+        return;
+    }
+    printf("\n--- Veiculos cadastrados (%d) ---\n", col->quantidade);
+    for (int i = 0; i < col->quantidade; i++) {
+        exibir_veiculo(&col->dados[i]);
+    }
+}
+
+/* 7 - Exibir mapa de vagas */
+void exibir_mapa(int mapa[FILEIRAS][COLUNAS]) {
+    printf("\n     ");
+    for (int j = 0; j < COLUNAS; j++) {
+        printf("C%d ", j + 1);
+    }
+    printf("\n");
+    for (int i = 0; i < FILEIRAS; i++) {
+        printf("F%d   ", i + 1);
+        for (int j = 0; j < COLUNAS; j++) {
+            printf("%c  ", mapa[i][j] == 1 ? 'X' : '.');
+        }
+        printf("\n");
+    }
+    printf("Legenda: X = ocupada; . = livre\n");
+}
+
+/* 8 - Exibir relatorio da ocupacao */
+void exibir_relatorio(const Colecao *col, int mapa[FILEIRAS][COLUNAS]) {
+    int ocupadas = contar_ocupadas(mapa);
+    double percentual = (ocupadas / (double)MAX_VAGAS) * 100.0;
+
+    printf("\n--- Relatorio de ocupacao ---\n");
+    printf("Total de vagas : %d\n", MAX_VAGAS);
+    printf("Vagas ocupadas : %d\n", ocupadas);
+    printf("Vagas livres   : %d\n", MAX_VAGAS - ocupadas);
+    printf("Ocupacao       : %.2f%%\n", percentual);
+    printf("Carros         : %d\n", contar_categoria(col, 1));
+    printf("Motos          : %d\n", contar_categoria(col, 2));
+
+    if (col->quantidade != ocupadas) {
+        printf("ATENCAO: inconsistencia entre o mapa e os registros!\n");
+    }
+}
+
 /* ================= MENU ================= */
 
 void exibir_menu(void) {
@@ -383,6 +489,10 @@ void exibir_menu(void) {
     printf("2 - Consultar veiculo por identificador\n");
     printf("3 - Atualizar descricao ou categoria\n");
     printf("4 - Mover veiculo para outra vaga\n");
+    printf("5 - Remover veiculo\n");
+    printf("6 - Listar veiculos cadastrados\n");
+    printf("7 - Exibir mapa de vagas\n");
+    printf("8 - Exibir relatorio da ocupacao\n");
     printf("0 - Encerrar\n");
     printf("Opcao: ");
 }
@@ -403,12 +513,16 @@ int main(void) {
         opcao = ler_opcao();
 
         switch (opcao) {
-            case 1: cadastrar_veiculo(&col, mapa); break;
-            case 2: consultar_veiculo(&col);       break;
-            case 3: atualizar_veiculo(&col);       break;
-            case 4: mover_veiculo(&col, mapa);     break;
-            case 0: printf("Encerrando...\n");     break;
-            default: printf("Opcao invalida.\n");  break;
+            case 1: cadastrar_veiculo(&col, mapa);   break;
+            case 2: consultar_veiculo(&col);         break;
+            case 3: atualizar_veiculo(&col);         break;
+            case 4: mover_veiculo(&col, mapa);       break;
+            case 5: remover_veiculo(&col, mapa);     break;
+            case 6: listar_veiculos(&col);           break;
+            case 7: exibir_mapa(mapa);               break;
+            case 8: exibir_relatorio(&col, mapa);    break;
+            case 0: printf("Encerrando...\n");       break;
+            default: printf("Opcao invalida.\n");    break;
         }
     } while (opcao != 0);
 
