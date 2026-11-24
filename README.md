@@ -23,7 +23,9 @@ Li, testei e adaptei o código antes de usar.
 
 **(d) Código externo adaptado:** Não.
 
-|-------|--------------------|--------------------|---------------------|----------|
+
+
+
 
 ## Casos teste (opções 5 a 8 - Matheus)
 
