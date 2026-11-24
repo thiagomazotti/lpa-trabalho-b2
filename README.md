@@ -22,3 +22,24 @@ Sistema de Gestão de Estacionamento em C
 Li, testei e adaptei o código antes de usar.
 
 **(d) Código externo adaptado:** Não.
+
+|-------|--------------------|--------------------|---------------------|----------|
+
+## Casos teste (opções 5 a 8 - Matheus)
+
+| Teste | Entrada / operação | Resultado esperado | Resultado observado | Situação |
+|-------|--------------------|--------------------|---------------------|----------|
+| T05 (crescimento dinâmico) | Opção 1 com três entradas distintas| Os três veículos são cadastrados e a memória dobra com o uso do realloc | Ao colocar três entradas aparece uma mensagem dizendo que a capacidade foi ampliada. Quando usamos a opção 6 para listar, as três entradas aparecem | Aprovado |
+| T08 (remoção) | Opção 1 para incluir vaga a um veículo, depois opção 5 para remover| O veículo desaparecerá do registro do sistema e a vaga é liberada| Ao colocar um veículo ASDF123 numa vaga F1/C1 depois remover ele, aparece uma mensagem dizendo que o veículo foi removido, ao buscar no mapa aparece que a vaga tá liberada, ao colocar um outro veículo WASD123 na mesma vaga e listar os veículos cadastrados, aparece o novo veículo, não o antigo nesse lugar | Aprovado |
+| T09 (lotação) | Opção 1 com 21 entradas | A vigésima primeira vaga será rejeitada | Ao colocar 21 entradas aparece uma mensagem dizendo que o estacionamento tá lotado, nos limitando a 20 vagas | Aprovado |
+
+## Declaração individual — Matheus de Assis Faria
+
+**(a) Funcionalidades em que atuei:** Opções de 5 a 8 do menu (Remover, Listar, Exibir mapa, Exibir relatório), atualizei o código já existente do thiago.
+
+**(b) Usei IA generativa?** Sim
+
+**(c) Ferramenta e uso:** Claude (Anthropic). Usei para ajuda com o compilador gcc, para  para explicações e validação de requisitos.
+
+**(d) Código externo adaptado:** Não.
+
